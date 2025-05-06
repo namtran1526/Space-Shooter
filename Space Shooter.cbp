@@ -31,6 +31,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="game.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="score.cpp" />
+		<Unit filename="score.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
