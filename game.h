@@ -7,12 +7,12 @@
 // Hằng số cho kích thước cửa sổ và các đối tượng
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
-const int PLAYER_WIDTH = 40;
-const int PLAYER_HEIGHT = 40;
-const int BULLET_WIDTH = 5;
-const int BULLET_HEIGHT = 15;
-const int ENEMY_WIDTH = 30;
-const int ENEMY_HEIGHT = 30;
+const int PLAYER_WIDTH = 80;
+const int PLAYER_HEIGHT = 80;
+const int BULLET_WIDTH = 10;
+const int BULLET_HEIGHT = 30;
+const int ENEMY_WIDTH = 40;
+const int ENEMY_HEIGHT = 40;
 const int PLAYER_SPEED = 5;
 const int BULLET_SPEED = 10;
 const int ENEMY_SPEED = 3;
