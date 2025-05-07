@@ -1,28 +1,45 @@
 # depslib dependency file v1.0
-1746547109 source:x:\advancedcode\space shooter\main.cpp
+1746580762 source:x:\advancedcode\space shooter\main.cpp
 	"game.h"
 	"score.h"
+	"menu.h"
+	"instruction.h"
 	<cstdlib>
 	<ctime>
 	<algorithm>
 	<iostream>
 
-1746465417 x:\advancedcode\space shooter\game.h
+1746578743 x:\advancedcode\space shooter\game.h
 	<SDL.h>
 	<vector>
 
-1746547109 x:\advancedcode\space shooter\score.h
+1746578733 x:\advancedcode\space shooter\score.h
 	<SDL.h>
 	<SDL_ttf.h>
-	<SDL_image.h>
 	<string>
 	<iostream>
 	"game.h"
 
-1746547109 source:x:\advancedcode\space shooter\score.cpp
+1746580762 source:x:\advancedcode\space shooter\score.cpp
 	"score.h"
-	"game.h"
 	<fstream>
 	<sstream>
+
+1746580762 source:x:\advancedcode\space shooter\menu.cpp
+	"menu.h"
+
+1746578733 x:\advancedcode\space shooter\menu.h
+	<SDL.h>
+	<SDL_image.h>
 	<iostream>
+	"game.h"
+
+1746580762 source:x:\advancedcode\space shooter\instruction.cpp
+	"instruction.h"
+
+1746578733 x:\advancedcode\space shooter\instruction.h
+	<SDL.h>
+	<SDL_image.h>
+	<iostream>
+	"game.h"
 

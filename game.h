@@ -17,10 +17,13 @@ const int PLAYER_SPEED = 5;
 const int BULLET_SPEED = 10;
 const int ENEMY_SPEED = 3;
 const Uint32 BULLET_COOLDOWN = 500; // 500ms giữa các lần bắn
+const Uint32 COUNTDOWN_DELAY = 1000; // 1 giây cho mỗi bước đếm
 
 // Enum cho trạng thái game
 enum GameState {
     MENU,
+    INSTRUCTIONS,
+    COUNTDOWN,
     PLAYING,
     GAME_OVER
 };
@@ -29,6 +32,7 @@ enum GameState {
 struct GameObject {
     SDL_Rect rect;
     bool active;
+    SDL_Texture* texture;
 };
 
 #endif

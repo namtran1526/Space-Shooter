@@ -32,7 +32,11 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="game.h" />
+		<Unit filename="instruction.cpp" />
+		<Unit filename="instruction.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="menu.cpp" />
+		<Unit filename="menu.h" />
 		<Unit filename="score.cpp" />
 		<Unit filename="score.h" />
 		<Extensions>
