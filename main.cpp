@@ -1,10 +1,13 @@
 #include "game.h"
-#include "score.h"
+#include "player.h"
+#include "bullet.h"
+#include "enemy.h"
+#include "explosion.h"
 #include "menu.h"
+#include "score.h"
 #include "instruction.h"
 #include <cstdlib>
 #include <ctime>
-#include <algorithm>
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -33,37 +36,13 @@ int main(int argc, char* argv[]) {
     }
 
     srand(time(nullptr));
+    Player player(renderer);
+    BulletManager bullets(renderer);
+    EnemyManager enemies(renderer);
+    ExplosionManager explosion(renderer);
     ScoreManager scoreManager;
     MenuManager menuManager(renderer);
     InstructionManager instructionManager(renderer);
-
-    // Load textures with fallback
-    SDL_Texture* playerTexture = nullptr;
-    SDL_Surface* playerSurface = IMG_Load("resources/Player.png");
-    if (playerSurface) {
-        playerTexture = SDL_CreateTextureFromSurface(renderer, playerSurface);
-        SDL_FreeSurface(playerSurface);
-    } else {
-        std::cout << "Warning: Could not load Player.png! Using fallback. " << IMG_GetError() << std::endl;
-    }
-
-    SDL_Texture* enemyTexture = nullptr;
-    SDL_Surface* enemySurface = IMG_Load("resources/Enemy.png");
-    if (enemySurface) {
-        enemyTexture = SDL_CreateTextureFromSurface(renderer, enemySurface);
-        SDL_FreeSurface(enemySurface);
-    } else {
-        std::cout << "Warning: Could not load Enemy.png! Using fallback. " << IMG_GetError() << std::endl;
-    }
-
-    SDL_Texture* bulletTexture = nullptr;
-    SDL_Surface* bulletSurface = IMG_Load("resources/Bullet.png");
-    if (bulletSurface) {
-        bulletTexture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
-        SDL_FreeSurface(bulletSurface);
-    } else {
-        std::cout << "Warning: Could not load Bullet.png! Using fallback. " << IMG_GetError() << std::endl;
-    }
 
     SDL_Texture* liveTexture = nullptr;
     SDL_Surface* liveSurface = IMG_Load("resources/Live.png");
@@ -83,14 +62,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Warning: Could not load Play_BG.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 
-    GameObject player = { {WINDOW_WIDTH/2 - PLAYER_WIDTH/2, WINDOW_HEIGHT - PLAYER_HEIGHT - 10, PLAYER_WIDTH, PLAYER_HEIGHT}, true, playerTexture };
-    std::vector<GameObject> bullets;
-    std::vector<GameObject> enemies;
-    Uint32 lastEnemySpawn = 0;
-    const Uint32 ENEMY_SPAWN_INTERVAL = 1000;
-    Uint32 lastShotTime = 0;
     Uint32 countdownStart = 0;
     int countdownStep = 0;
+    Uint32 lastEnemySpawn = 0;
 
     GameState state = MENU;
     SDL_Event event;
@@ -98,19 +72,22 @@ int main(int argc, char* argv[]) {
 
     while (true) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) goto cleanup;
+            if (event.type == SDL_QUIT) {
+                std::cout << "Quit event received, exiting game" << std::endl;
+                goto cleanup;
+            }
             if (event.type == SDL_MOUSEBUTTONDOWN) {
                 if (state == MENU) {
                     menuManager.handleClick(event.button.x, event.button.y, state);
                     if (state == COUNTDOWN) {
                         scoreManager.reset();
-                        player = { {WINDOW_WIDTH/2 - PLAYER_WIDTH/2, WINDOW_HEIGHT - PLAYER_HEIGHT - 10, PLAYER_WIDTH, PLAYER_HEIGHT}, true, playerTexture };
-                        bullets.clear();
-                        enemies.clear();
-                        lastEnemySpawn = 0;
-                        lastShotTime = 0;
+                        player.resetPosition();
+                        bullets.getBullets().clear();
+                        enemies.getEnemies().clear();
                         countdownStart = SDL_GetTicks();
                         countdownStep = 0;
+                        lastEnemySpawn = 0;
+                        std::cout << "COUNTDOWN initialized" << std::endl;
                     }
                 } else if (state == INSTRUCTIONS) {
                     instructionManager.handleClick(event.button.x, event.button.y, state);
@@ -124,16 +101,17 @@ int main(int argc, char* argv[]) {
                             event.button.y >= buttonRect.y && event.button.y <= buttonRect.y + buttonRect.h) {
                             state = COUNTDOWN;
                             scoreManager.reset();
-                            player = { {WINDOW_WIDTH/2 - PLAYER_WIDTH/2, WINDOW_HEIGHT - PLAYER_HEIGHT - 10, PLAYER_WIDTH, PLAYER_HEIGHT}, true, playerTexture };
-                            player.active = true; // Ensure player is active when restarting
-                            bullets.clear();
-                            enemies.clear();
-                            lastEnemySpawn = 0;
-                            lastShotTime = 0;
+                            player.resetPosition();
+                            bullets.getBullets().clear();
+                            enemies.getEnemies().clear();
                             countdownStart = SDL_GetTicks();
                             countdownStep = 0;
+                            lastEnemySpawn = 0;
+                            std::cout << "Clicked Play Again, transitioning to COUNTDOWN" << std::endl;
                         }
                     }
+                } else if (state == PLAYING || state == PAUSED) {
+                    menuManager.handleClick(event.button.x, event.button.y, state);
                 }
             }
         }
@@ -142,117 +120,103 @@ int main(int argc, char* argv[]) {
             Uint32 currentTime = SDL_GetTicks();
             int elapsedSteps = (currentTime - countdownStart) / COUNTDOWN_DELAY;
             countdownStep = elapsedSteps;
-            if (countdownStep >= 5) { // Sau "Are you ready?", "3", "2", "1", "Start"
+            if (countdownStep >= 5) {
                 state = PLAYING;
                 countdownStep = 0;
+                std::cout << "State changed to PLAYING" << std::endl;
             }
         }
 
         if (state == PLAYING) {
-            if (keyboardState[SDL_SCANCODE_LEFT] && player.rect.x > 0) player.rect.x -= PLAYER_SPEED;
-            if (keyboardState[SDL_SCANCODE_RIGHT] && player.rect.x < WINDOW_WIDTH - PLAYER_WIDTH) player.rect.x += PLAYER_SPEED;
+            player.update(keyboardState);
             Uint32 currentTime = SDL_GetTicks();
-            if (keyboardState[SDL_SCANCODE_SPACE] && currentTime - lastShotTime > BULLET_COOLDOWN) {
-                bullets.push_back({{player.rect.x + PLAYER_WIDTH/2 - BULLET_WIDTH/2, player.rect.y - BULLET_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT}, true, bulletTexture});
-                lastShotTime = currentTime;
+            if (keyboardState[SDL_SCANCODE_SPACE]) {
+                bullets.shoot(player.getObject().rect.x + PLAYER_WIDTH/2, player.getObject().rect.y, currentTime, BULLET_COOLDOWN);
             }
+            enemies.spawn(currentTime);
+            bullets.update(scoreManager);
+            enemies.update(scoreManager, player.getObject());
 
-            if (currentTime - lastEnemySpawn > ENEMY_SPAWN_INTERVAL) {
-                enemies.push_back({{rand() % (WINDOW_WIDTH - ENEMY_WIDTH), 0, ENEMY_WIDTH, ENEMY_HEIGHT}, true, enemyTexture});
-                lastEnemySpawn = currentTime;
-            }
-
-            for (auto& bullet : bullets) if (bullet.active) { bullet.rect.y -= BULLET_SPEED; if (bullet.rect.y < 0) bullet.active = false; }
-            for (auto& enemy : enemies) if (enemy.active) {
-                enemy.rect.y += ENEMY_SPEED;
-                if (enemy.rect.y > WINDOW_HEIGHT) enemy.active = false;
-                else if (player.active && SDL_HasIntersection(&player.rect, &enemy.rect)) {
-                    scoreManager.loseLife();
-                    enemy.active = false;
-                    if (scoreManager.getLives() <= 0) {
-                        state = GAME_OVER;
-                        player.active = false;
+            // Kiểm tra va chạm giữa đạn và kẻ thù
+            auto& bulletList = bullets.getBullets();
+            auto& enemyList = enemies.getEnemies();
+            for (size_t i = 0; i < bulletList.size(); ++i) {
+                if (bulletList[i].active) {
+                    for (size_t j = 0; j < enemyList.size(); ++j) {
+                        if (enemyList[j].active && SDL_HasIntersection(&bulletList[i].rect, &enemyList[j].rect)) {
+                            bulletList[i].active = false;
+                            enemyList[j].active = false;
+                            scoreManager.addScore(1);
+                            std::cout << "Enemy hit by bullet, score increased to: " << scoreManager.getScore() << std::endl;
+                        }
                     }
                 }
             }
-            for (size_t i = 0; i < bullets.size(); ++i) if (bullets[i].active) for (size_t j = 0; j < enemies.size(); ++j) if (enemies[j].active && SDL_HasIntersection(&bullets[i].rect, &enemies[j].rect)) {
-                bullets[i].active = false;
-                enemies[j].active = false;
-                scoreManager.addScore(1);
-            }
 
-            bullets.erase(std::remove_if(bullets.begin(), bullets.end(), [](const GameObject& obj) { return !obj.active; }), bullets.end());
-            enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const GameObject& obj) { return !obj.active; }), enemies.end());
+            // Kiểm tra xem player có hết mạng không
+            if (scoreManager.getLives() <= 0 && player.getObject().active) {
+                explosion.trigger(player.getObject().rect.x, player.getObject().rect.y);
+                player.getObject().active = false; // Vô hiệu hóa player
+                state = EXPLODING;
+                std::cout << "Player died, transitioning to EXPLODING" << std::endl;
+            }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        if (state == EXPLODING) {
+            explosion.update();
+            if (!explosion.isActive()) {
+                state = GAME_OVER;
+                std::cout << "Explosion finished, transitioning to GAME_OVER" << std::endl;
+            }
+        }
 
+        // Render
         if (state == MENU) {
-            menuManager.render(renderer);
+            menuManager.render(renderer, state);
         } else if (state == INSTRUCTIONS) {
             instructionManager.render(renderer);
-        } else if (state == COUNTDOWN || state == PLAYING || state == GAME_OVER) {
+        } else if (state == COUNTDOWN || state == PLAYING || state == PAUSED || state == EXPLODING || state == GAME_OVER) {
             if (playBGTexture) {
                 SDL_RenderCopy(renderer, playBGTexture, nullptr, nullptr);
             } else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Fallback to black background
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
                 SDL_RenderClear(renderer);
+                std::cout << "Warning: Play_BG not loaded, using black background!" << std::endl;
             }
-        }
 
-        if (state == COUNTDOWN) {
-            const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
-            if (countdownStep < 5) {
-                TTF_Font* countdownFont = TTF_OpenFont("C:\\Windows\\Fonts\\arialbd.ttf", 48);
-                if (!countdownFont) {
-                    std::cout << "Warning: Could not load bold font! Using default font. " << TTF_GetError() << std::endl;
-                    countdownFont = scoreManager.getFont();
+            if (state == COUNTDOWN) {
+                const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
+                if (countdownStep < 5) {
+                    TTF_Font* countdownFont = TTF_OpenFont("C:\\Windows\\Fonts\\arialbd.ttf", 48);
+                    if (!countdownFont) {
+                        std::cout << "Warning: Could not load bold font at 'C:\\Windows\\Fonts\\arialbd.ttf'! SDL_ttf Error: " << TTF_GetError() << std::endl;
+                        std::cout << "Falling back to default font from ScoreManager." << std::endl;
+                        countdownFont = scoreManager.getFont();
+                        if (countdownFont) TTF_SetFontSize(countdownFont, 48);
+                    }
                     if (countdownFont) {
-                        TTF_SetFontSize(countdownFont, 48); // Ensure size is 48 even with default font
-                    }
-                }
-                if (countdownFont) {
-                    SDL_Surface* countdownSurface = TTF_RenderText_Solid(countdownFont, countdownTexts[countdownStep], scoreManager.getTextColor());
-                    if (countdownSurface) {
-                        SDL_Texture* countdownTexture = SDL_CreateTextureFromSurface(renderer, countdownSurface);
-                        if (countdownTexture) {
-                            SDL_Rect countdownRect = {(WINDOW_WIDTH - countdownSurface->w) / 2, (WINDOW_HEIGHT - countdownSurface->h) / 2, countdownSurface->w, countdownSurface->h};
-                            SDL_RenderCopy(renderer, countdownTexture, nullptr, &countdownRect);
-                            SDL_DestroyTexture(countdownTexture);
+                        SDL_Surface* countdownSurface = TTF_RenderText_Solid(countdownFont, countdownTexts[countdownStep], scoreManager.getTextColor());
+                        if (countdownSurface) {
+                            SDL_Texture* countdownTexture = SDL_CreateTextureFromSurface(renderer, countdownSurface);
+                            if (countdownTexture) {
+                                SDL_Rect countdownRect = {(WINDOW_WIDTH - countdownSurface->w) / 2, (WINDOW_HEIGHT - countdownSurface->h) / 2, countdownSurface->w, countdownSurface->h};
+                                SDL_RenderCopy(renderer, countdownTexture, nullptr, &countdownRect);
+                                SDL_DestroyTexture(countdownTexture);
+                            }
+                            SDL_FreeSurface(countdownSurface);
                         }
-                        SDL_FreeSurface(countdownSurface);
-                    } else {
-                        std::cout << "Error: Could not render countdown text! " << TTF_GetError() << std::endl;
+                        if (countdownFont != scoreManager.getFont()) TTF_CloseFont(countdownFont);
                     }
-                    if (countdownFont != scoreManager.getFont()) TTF_CloseFont(countdownFont);
                 }
-            }
-        } else if (state == PLAYING && player.active) {
-            if (player.texture) {
-                SDL_RenderCopy(renderer, player.texture, nullptr, &player.rect);
             } else {
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                SDL_RenderFillRect(renderer, &player.rect);
-            }
-            for (const auto& bullet : bullets) {
-                if (bullet.active) {
-                    if (bullet.texture) {
-                        SDL_RenderCopy(renderer, bullet.texture, nullptr, &bullet.rect);
-                    } else {
-                        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                        SDL_RenderFillRect(renderer, &bullet.rect);
-                    }
+                player.render(renderer);
+                bullets.render(renderer);
+                enemies.render(renderer);
+                if (state == EXPLODING) {
+                    explosion.render(renderer);
                 }
-            }
-            for (const auto& enemy : enemies) {
-                if (enemy.active) {
-                    if (enemy.texture) {
-                        SDL_RenderCopy(renderer, enemy.texture, nullptr, &enemy.rect);
-                    } else {
-                        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                        SDL_RenderFillRect(renderer, &enemy.rect);
-                    }
+                if (state == PLAYING || state == PAUSED) {
+                    menuManager.render(renderer, state);
                 }
             }
         }
@@ -263,9 +227,6 @@ int main(int argc, char* argv[]) {
     }
 
 cleanup:
-    if (playerTexture) SDL_DestroyTexture(playerTexture);
-    if (enemyTexture) SDL_DestroyTexture(enemyTexture);
-    if (bulletTexture) SDL_DestroyTexture(bulletTexture);
     if (liveTexture) SDL_DestroyTexture(liveTexture);
     if (playBGTexture) SDL_DestroyTexture(playBGTexture);
     SDL_DestroyRenderer(renderer);

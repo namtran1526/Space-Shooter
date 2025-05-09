@@ -7,9 +7,10 @@ ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
         std::cout << "Error: TTF_Init failed! " << TTF_GetError() << std::endl;
         return;
     }
-    font = TTF_OpenFont("C:\\Windows\\Fonts\\arial.ttf", 24);
+    font = TTF_OpenFont("C:\\Windows\\Fonts\\arial.ttf", 24); // Sử dụng đường dẫn Windows
     if (!font) {
-        std::cout << "Error: Could not load font arial.ttf! " << TTF_GetError() << std::endl;
+        std::cout << "Error: Could not load font at 'C:\\Windows\\Fonts\\arial.ttf'! SDL_ttf Error: " << TTF_GetError() << std::endl;
+        std::cout << "Please ensure the font file exists or adjust the path if needed." << std::endl;
         TTF_Quit();
         return;
     }
@@ -73,7 +74,7 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
         return;
     }
 
-    if (state == PLAYING) {
+    if (state == PLAYING || state == PAUSED) {
         std::string scoreText = "Score: " + std::to_string(score);
         std::string highScoreText = "High Score: " + std::to_string(highScore);
 
@@ -87,6 +88,7 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect highScoreRect = {x, y + 30, highScoreSurface->w, highScoreSurface->h};
                 SDL_RenderCopy(renderer, scoreTexture, nullptr, &scoreRect);
                 SDL_RenderCopy(renderer, highScoreTexture, nullptr, &highScoreRect);
+                std::cout << "Rendered Score: " << scoreText << " and High Score: " << highScoreText << " at state: " << (state == PLAYING ? "PLAYING" : "PAUSED") << std::endl;
             }
             if (scoreTexture) SDL_DestroyTexture(scoreTexture);
             if (highScoreTexture) SDL_DestroyTexture(highScoreTexture);
@@ -101,6 +103,7 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect liveRect = {x + i * (heartSize + heartSpacing), y + 60, heartSize, heartSize};
                 SDL_RenderCopy(renderer, liveTexture, nullptr, &liveRect);
             }
+            std::cout << "Rendered Lives: " << lives << " at state: " << (state == PLAYING ? "PLAYING" : "PAUSED") << std::endl;
         }
     } else if (state == GAME_OVER) {
         std::string gameOverText = "Game Over";
@@ -124,8 +127,8 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect buttonRect = {playAgainRect.x - 10, playAgainRect.y - 10, playAgainRect.w + 20, playAgainRect.h + 20};
                 SDL_RenderDrawRect(renderer, &buttonRect);
             }
+            SDL_FreeSurface(gameOverSurface);
+            SDL_FreeSurface(playAgainSurface);
         }
-        if (gameOverSurface) SDL_FreeSurface(gameOverSurface);
-        if (playAgainSurface) SDL_FreeSurface(playAgainSurface);
     }
 }

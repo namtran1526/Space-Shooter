@@ -12,14 +12,16 @@ private:
     SDL_Texture* playButtonTexture;
     SDL_Texture* instructionButtonTexture;
     SDL_Texture* musicButtonTexture;
+    SDL_Texture* pauseButtonTexture;
     bool musicOn;
     SDL_Rect musicButtonSrcRect;
+    SDL_Rect pauseButtonSrcRect;
     void loadTextures(SDL_Renderer* renderer);
 
 public:
     MenuManager(SDL_Renderer* renderer);
     ~MenuManager();
-    void render(SDL_Renderer* renderer);
+    void render(SDL_Renderer* renderer, GameState state);
     void handleClick(int x, int y, GameState& state);
     bool isMusicOn() const { return musicOn; }
 };

@@ -8,6 +8,7 @@
 
 class InstructionManager {
 private:
+    SDL_Texture* backgroundTexture;
     SDL_Texture* instructionTexture;
     SDL_Texture* backButtonTexture;
     void loadTextures(SDL_Renderer* renderer);
