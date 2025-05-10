@@ -31,12 +31,22 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="bullet.cpp" />
+		<Unit filename="bullet.h" />
+		<Unit filename="enemy.cpp" />
+		<Unit filename="enemy.h" />
+		<Unit filename="explosion.cpp" />
+		<Unit filename="explosion.h" />
 		<Unit filename="game.h" />
+		<Unit filename="gameover.cpp" />
+		<Unit filename="gameover.h" />
 		<Unit filename="instruction.cpp" />
 		<Unit filename="instruction.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="menu.cpp" />
 		<Unit filename="menu.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
 		<Unit filename="score.cpp" />
 		<Unit filename="score.h" />
 		<Extensions>

@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "score.h"
 #include "instruction.h"
+#include "gameover.h"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -43,6 +44,7 @@ int main(int argc, char* argv[]) {
     ScoreManager scoreManager;
     MenuManager menuManager(renderer);
     InstructionManager instructionManager(renderer);
+    GameOverManager gameOverManager(renderer);
 
     SDL_Texture* liveTexture = nullptr;
     SDL_Surface* liveSurface = IMG_Load("resources/Live.png");
@@ -74,7 +76,7 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 std::cout << "Quit event received, exiting game" << std::endl;
-                goto cleanup;
+                break;
             }
             if (event.type == SDL_MOUSEBUTTONDOWN) {
                 if (state == MENU) {
@@ -92,24 +94,7 @@ int main(int argc, char* argv[]) {
                 } else if (state == INSTRUCTIONS) {
                     instructionManager.handleClick(event.button.x, event.button.y, state);
                 } else if (state == GAME_OVER) {
-                    SDL_Surface* playAgainSurface = TTF_RenderText_Solid(scoreManager.getFont(), "Play Again", scoreManager.getTextColor());
-                    if (playAgainSurface) {
-                        SDL_Rect playAgainRect = {(WINDOW_WIDTH - playAgainSurface->w) / 2, (WINDOW_HEIGHT - playAgainSurface->h) / 2 + 50, playAgainSurface->w, playAgainSurface->h};
-                        SDL_Rect buttonRect = {playAgainRect.x - 10, playAgainRect.y - 10, playAgainRect.w + 20, playAgainRect.h + 20};
-                        SDL_FreeSurface(playAgainSurface);
-                        if (event.button.x >= buttonRect.x && event.button.x <= buttonRect.x + buttonRect.w &&
-                            event.button.y >= buttonRect.y && event.button.y <= buttonRect.y + buttonRect.h) {
-                            state = COUNTDOWN;
-                            scoreManager.reset();
-                            player.resetPosition();
-                            bullets.getBullets().clear();
-                            enemies.getEnemies().clear();
-                            countdownStart = SDL_GetTicks();
-                            countdownStep = 0;
-                            lastEnemySpawn = 0;
-                            std::cout << "Clicked Play Again, transitioning to COUNTDOWN" << std::endl;
-                        }
-                    }
+                    gameOverManager.handleClick(event.button.x, event.button.y, state, scoreManager, player, bullets, enemies, countdownStart, countdownStep, lastEnemySpawn);
                 } else if (state == PLAYING || state == PAUSED) {
                     menuManager.handleClick(event.button.x, event.button.y, state);
                 }
@@ -187,9 +172,9 @@ int main(int argc, char* argv[]) {
             if (state == COUNTDOWN) {
                 const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
                 if (countdownStep < 5) {
-                    TTF_Font* countdownFont = TTF_OpenFont("C:\\Windows\\Fonts\\arialbd.ttf", 48);
+                    TTF_Font* countdownFont = TTF_OpenFont("resources/VNI-Lithos.TTF", 48); // Sử dụng VNI-Lithos.TTF
                     if (!countdownFont) {
-                        std::cout << "Warning: Could not load bold font at 'C:\\Windows\\Fonts\\arialbd.ttf'! SDL_ttf Error: " << TTF_GetError() << std::endl;
+                        std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF' for countdown! SDL_ttf Error: " << TTF_GetError() << std::endl;
                         std::cout << "Falling back to default font from ScoreManager." << std::endl;
                         countdownFont = scoreManager.getFont();
                         if (countdownFont) TTF_SetFontSize(countdownFont, 48);
@@ -208,6 +193,8 @@ int main(int argc, char* argv[]) {
                         if (countdownFont != scoreManager.getFont()) TTF_CloseFont(countdownFont);
                     }
                 }
+            } else if (state == GAME_OVER) {
+                gameOverManager.render(renderer);
             } else {
                 player.render(renderer);
                 bullets.render(renderer);
@@ -221,12 +208,12 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Luôn render điểm số và số mạng trong mọi trạng thái
         scoreManager.render(renderer, 10, 10, state, liveTexture);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
 
-cleanup:
     if (liveTexture) SDL_DestroyTexture(liveTexture);
     if (playBGTexture) SDL_DestroyTexture(playBGTexture);
     SDL_DestroyRenderer(renderer);

@@ -1,4 +1,5 @@
 #include "score.h"
+#include "game.h"
 #include <fstream>
 #include <sstream>
 
@@ -7,10 +8,10 @@ ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
         std::cout << "Error: TTF_Init failed! " << TTF_GetError() << std::endl;
         return;
     }
-    font = TTF_OpenFont("C:\\Windows\\Fonts\\arial.ttf", 24); // Sử dụng đường dẫn Windows
+    font = TTF_OpenFont("resources/VNI-Lithos.TTF", 24); // Sử dụng VNI-Lithos.TTF
     if (!font) {
-        std::cout << "Error: Could not load font at 'C:\\Windows\\Fonts\\arial.ttf'! SDL_ttf Error: " << TTF_GetError() << std::endl;
-        std::cout << "Please ensure the font file exists or adjust the path if needed." << std::endl;
+        std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF'! SDL_ttf Error: " << TTF_GetError() << std::endl;
+        std::cout << "Please ensure the font file exists in the resources folder and the path is correct." << std::endl;
         TTF_Quit();
         return;
     }
@@ -74,7 +75,9 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
         return;
     }
 
-    if (state == PLAYING || state == PAUSED) {
+    // Chỉ render điểm số và số mạng khi không ở trạng thái MENU, GAME_OVER, hoặc INSTRUCTIONS
+    if (state != MENU && state != GAME_OVER && state != INSTRUCTIONS) {
+        // Hiển thị điểm số và điểm cao nhất
         std::string scoreText = "Score: " + std::to_string(score);
         std::string highScoreText = "High Score: " + std::to_string(highScore);
 
@@ -88,7 +91,7 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect highScoreRect = {x, y + 30, highScoreSurface->w, highScoreSurface->h};
                 SDL_RenderCopy(renderer, scoreTexture, nullptr, &scoreRect);
                 SDL_RenderCopy(renderer, highScoreTexture, nullptr, &highScoreRect);
-                std::cout << "Rendered Score: " << scoreText << " and High Score: " << highScoreText << " at state: " << (state == PLAYING ? "PLAYING" : "PAUSED") << std::endl;
+                std::cout << "Rendered Score: " << scoreText << " and High Score: " << highScoreText << " at state: " << static_cast<int>(state) << std::endl;
             }
             if (scoreTexture) SDL_DestroyTexture(scoreTexture);
             if (highScoreTexture) SDL_DestroyTexture(highScoreTexture);
@@ -96,39 +99,15 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
         if (scoreSurface) SDL_FreeSurface(scoreSurface);
         if (highScoreSurface) SDL_FreeSurface(highScoreSurface);
 
+        // Hiển thị số mạng (lives) với kích thước lớn hơn và dịch xuống dưới
         if (liveTexture) {
-            const int heartSize = 20;
+            const int heartSize = 30; // Kích thước 30x30
             const int heartSpacing = 5;
             for (int i = 0; i < lives && i < 3; ++i) {
-                SDL_Rect liveRect = {x + i * (heartSize + heartSpacing), y + 60, heartSize, heartSize};
+                SDL_Rect liveRect = {x + i * (heartSize + heartSpacing), y + 70, heartSize, heartSize};
                 SDL_RenderCopy(renderer, liveTexture, nullptr, &liveRect);
             }
-            std::cout << "Rendered Lives: " << lives << " at state: " << (state == PLAYING ? "PLAYING" : "PAUSED") << std::endl;
-        }
-    } else if (state == GAME_OVER) {
-        std::string gameOverText = "Game Over";
-        std::string playAgainText = "Play Again";
-        SDL_Surface* gameOverSurface = TTF_RenderText_Solid(font, gameOverText.c_str(), textColor);
-        SDL_Surface* playAgainSurface = TTF_RenderText_Solid(font, playAgainText.c_str(), textColor);
-        if (gameOverSurface && playAgainSurface) {
-            SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(renderer, gameOverSurface);
-            SDL_Texture* playAgainTexture = SDL_CreateTextureFromSurface(renderer, playAgainSurface);
-            if (gameOverTexture) {
-                SDL_Rect gameOverRect = {(WINDOW_WIDTH - gameOverSurface->w) / 2, (WINDOW_HEIGHT - gameOverSurface->h) / 2 - 50, gameOverSurface->w, gameOverSurface->h};
-                SDL_RenderCopy(renderer, gameOverTexture, nullptr, &gameOverRect);
-                SDL_DestroyTexture(gameOverTexture);
-            }
-            if (playAgainTexture) {
-                SDL_Rect playAgainRect = {(WINDOW_WIDTH - playAgainSurface->w) / 2, (WINDOW_HEIGHT - playAgainSurface->h) / 2 + 50, playAgainSurface->w, playAgainSurface->h};
-                SDL_RenderCopy(renderer, playAgainTexture, nullptr, &playAgainRect);
-                SDL_DestroyTexture(playAgainTexture);
-
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-                SDL_Rect buttonRect = {playAgainRect.x - 10, playAgainRect.y - 10, playAgainRect.w + 20, playAgainRect.h + 20};
-                SDL_RenderDrawRect(renderer, &buttonRect);
-            }
-            SDL_FreeSurface(gameOverSurface);
-            SDL_FreeSurface(playAgainSurface);
+            std::cout << "Rendered Lives: " << lives << " at state: " << static_cast<int>(state) << std::endl;
         }
     }
 }
