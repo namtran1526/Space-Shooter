@@ -3,7 +3,7 @@
 #include <iostream>
 #include <algorithm>
 
-BulletManager::BulletManager(SDL_Renderer* renderer) : texture(nullptr), lastShotTime(0) {
+BulletManager::BulletManager(SDL_Renderer* renderer, SoundManager* sound) : texture(nullptr), lastShotTime(0), soundManager(sound) {
     SDL_Surface* bulletSurface = IMG_Load("resources/Bullet.png");
     if (bulletSurface) {
         texture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
@@ -34,6 +34,7 @@ void BulletManager::shoot(int x, int y, Uint32 currentTime, Uint32 cooldown) {
     if (currentTime - lastShotTime > cooldown) {
         bullets.push_back({{x - BULLET_WIDTH/2, y - BULLET_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT}, true, texture});
         lastShotTime = currentTime;
+        soundManager->playShootSound(); // Phát âm thanh bắn, đã kiểm tra musicOn
         std::cout << "Bullet shot at (" << x << "," << y << ")" << std::endl;
     }
 }

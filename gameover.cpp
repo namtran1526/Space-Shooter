@@ -4,7 +4,7 @@
 #include "bullet.h"
 #include "enemy.h"
 
-GameOverManager::GameOverManager(SDL_Renderer* renderer) : backgroundTexture(nullptr), homeButtonTexture(nullptr), resetButtonTexture(nullptr) {
+GameOverManager::GameOverManager(SDL_Renderer* renderer, SoundManager* sound) : backgroundTexture(nullptr), homeButtonTexture(nullptr), resetButtonTexture(nullptr), soundManager(sound) {
     loadTextures(renderer);
 }
 
@@ -83,6 +83,7 @@ void GameOverManager::handleClick(int x, int y, GameState& state, ScoreManager& 
 
     if (x >= homeRect.x && x <= homeRect.x + homeRect.w && y >= homeRect.y && y <= homeRect.y + homeRect.h) {
         state = MENU;
+        soundManager->playMusicForState(MENU); // Phát nhạc Menu
         std::cout << "Clicked Home button, transitioning to MENU" << std::endl;
     } else if (x >= resetRect.x && x <= resetRect.x + resetRect.w && y >= resetRect.y && y <= resetRect.y + resetRect.h) {
         state = COUNTDOWN;
@@ -93,6 +94,7 @@ void GameOverManager::handleClick(int x, int y, GameState& state, ScoreManager& 
         countdownStart = SDL_GetTicks();
         countdownStep = 0;
         lastEnemySpawn = 0;
+        soundManager->playMusicForState(COUNTDOWN); // Phát nhạc Countdown
         std::cout << "Clicked Reset button, transitioning to COUNTDOWN" << std::endl;
     }
 }

@@ -9,16 +9,18 @@
 #include "player.h"
 #include "bullet.h"
 #include "enemy.h"
+#include "sound.h"
 
 class GameOverManager {
 private:
     SDL_Texture* backgroundTexture;
     SDL_Texture* homeButtonTexture;
     SDL_Texture* resetButtonTexture;
+    SoundManager* soundManager;
     void loadTextures(SDL_Renderer* renderer);
 
 public:
-    GameOverManager(SDL_Renderer* renderer);
+    GameOverManager(SDL_Renderer* renderer, SoundManager* sound);
     ~GameOverManager();
     void render(SDL_Renderer* renderer);
     void handleClick(int x, int y, GameState& state, ScoreManager& scoreManager, Player& player, BulletManager& bullets, EnemyManager& enemies, Uint32& countdownStart, int& countdownStep, Uint32& lastEnemySpawn);

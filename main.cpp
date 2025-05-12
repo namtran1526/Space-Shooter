@@ -7,6 +7,7 @@
 #include "score.h"
 #include "instruction.h"
 #include "gameover.h"
+#include "sound.h"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -37,14 +38,15 @@ int main(int argc, char* argv[]) {
     }
 
     srand(time(nullptr));
+    SoundManager soundManager;
     Player player(renderer);
-    BulletManager bullets(renderer);
+    BulletManager bullets(renderer, &soundManager);
     EnemyManager enemies(renderer);
-    ExplosionManager explosion(renderer);
+    ExplosionManager explosion(renderer, &soundManager);
     ScoreManager scoreManager;
-    MenuManager menuManager(renderer);
-    InstructionManager instructionManager(renderer);
-    GameOverManager gameOverManager(renderer);
+    MenuManager menuManager(renderer, &soundManager);
+    InstructionManager instructionManager(renderer, &soundManager);
+    GameOverManager gameOverManager(renderer, &soundManager);
 
     SDL_Texture* liveTexture = nullptr;
     SDL_Surface* liveSurface = IMG_Load("resources/Live.png");
@@ -69,6 +71,7 @@ int main(int argc, char* argv[]) {
     Uint32 lastEnemySpawn = 0;
 
     GameState state = MENU;
+    soundManager.playMusicForState(MENU); // Phát nhạc Menu khi bắt đầu
     SDL_Event event;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
@@ -89,7 +92,10 @@ int main(int argc, char* argv[]) {
                         countdownStart = SDL_GetTicks();
                         countdownStep = 0;
                         lastEnemySpawn = 0;
+                        soundManager.playMusicForState(COUNTDOWN); // Phát nhạc Countdown
                         std::cout << "COUNTDOWN initialized" << std::endl;
+                    } else if (state == INSTRUCTIONS) {
+                        soundManager.playMusicForState(INSTRUCTIONS); // Phát nhạc Menu trong INSTRUCTIONS
                     }
                 } else if (state == INSTRUCTIONS) {
                     instructionManager.handleClick(event.button.x, event.button.y, state);
@@ -151,6 +157,7 @@ int main(int argc, char* argv[]) {
             explosion.update();
             if (!explosion.isActive()) {
                 state = GAME_OVER;
+                soundManager.playMusicForState(GAME_OVER); // Phát nhạc GameOver
                 std::cout << "Explosion finished, transitioning to GAME_OVER" << std::endl;
             }
         }
@@ -172,7 +179,7 @@ int main(int argc, char* argv[]) {
             if (state == COUNTDOWN) {
                 const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
                 if (countdownStep < 5) {
-                    TTF_Font* countdownFont = TTF_OpenFont("resources/VNI-Lithos.TTF", 48); // Sử dụng VNI-Lithos.TTF
+                    TTF_Font* countdownFont = TTF_OpenFont("resources/VNI-Lithos.TTF", 48);
                     if (!countdownFont) {
                         std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF' for countdown! SDL_ttf Error: " << TTF_GetError() << std::endl;
                         std::cout << "Falling back to default font from ScoreManager." << std::endl;

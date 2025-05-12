@@ -1,9 +1,10 @@
 #include "menu.h"
 
-MenuManager::MenuManager(SDL_Renderer* renderer) : backgroundTexture(nullptr), playButtonTexture(nullptr), instructionButtonTexture(nullptr), musicButtonTexture(nullptr), pauseButtonTexture(nullptr), musicOn(true) {
+MenuManager::MenuManager(SDL_Renderer* renderer, SoundManager* sound) : backgroundTexture(nullptr), playButtonTexture(nullptr), instructionButtonTexture(nullptr), musicButtonTexture(nullptr), pauseButtonTexture(nullptr), musicOn(true), soundManager(sound) {
     musicButtonSrcRect = {0, 0, 100, 100};
     pauseButtonSrcRect = {0, 0, 50, 50};
     loadTextures(renderer);
+    soundManager->toggleMusic(musicOn, MENU); // Khởi tạo trạng thái nhạc
 }
 
 MenuManager::~MenuManager() {
@@ -109,6 +110,7 @@ void MenuManager::handleClick(int x, int y, GameState& state) {
         } else if (x >= musicRect.x && x <= musicRect.x + musicRect.w && y >= musicRect.y && y <= musicRect.y + musicRect.h) {
             musicOn = !musicOn;
             musicButtonSrcRect.x = musicOn ? 0 : 100;
+            soundManager->toggleMusic(musicOn, MENU); // Truyền trạng thái MENU
             std::cout << (musicOn ? "Music On" : "Music Off") << std::endl;
         }
     } else if (state == PLAYING || state == PAUSED) {

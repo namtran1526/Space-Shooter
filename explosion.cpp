@@ -2,7 +2,7 @@
 #include <SDL_image.h>
 #include <iostream>
 
-ExplosionManager::ExplosionManager(SDL_Renderer* renderer) : texture(nullptr) {
+ExplosionManager::ExplosionManager(SDL_Renderer* renderer, SoundManager* sound) : texture(nullptr), soundManager(sound) {
     SDL_Surface* explosionSurface = IMG_Load("resources/Boom.png");
     if (explosionSurface) {
         texture = SDL_CreateTextureFromSurface(renderer, explosionSurface);
@@ -44,6 +44,7 @@ void ExplosionManager::trigger(int x, int y) {
     explosion.currentFrame = 0;
     explosion.lastFrameTime = SDL_GetTicks();
     explosion.active = true;
+    soundManager->playBoomSound(); // Phát âm thanh nổ
     std::cout << "Explosion triggered at (" << explosion.position.x << "," << explosion.position.y << ")" << std::endl;
 }
 

@@ -5,6 +5,7 @@
 #include <SDL_image.h>
 #include <iostream>
 #include "game.h"
+#include "sound.h"
 
 class MenuManager {
 private:
@@ -16,10 +17,11 @@ private:
     bool musicOn;
     SDL_Rect musicButtonSrcRect;
     SDL_Rect pauseButtonSrcRect;
+    SoundManager* soundManager;
     void loadTextures(SDL_Renderer* renderer);
 
 public:
-    MenuManager(SDL_Renderer* renderer);
+    MenuManager(SDL_Renderer* renderer, SoundManager* sound);
     ~MenuManager();
     void render(SDL_Renderer* renderer, GameState state);
     void handleClick(int x, int y, GameState& state);

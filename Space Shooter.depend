@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1746888450 source:x:\advancedcode\space shooter\main.cpp
+1747061162 source:x:\advancedcode\space shooter\main.cpp
 	"game.h"
 	"player.h"
 	"bullet.h"
@@ -9,73 +9,78 @@
 	"score.h"
 	"instruction.h"
 	"gameover.h"
+	"sound.h"
 	<cstdlib>
 	<ctime>
 	<iostream>
 
-1746861525 x:\advancedcode\space shooter\game.h
+1747021422 x:\advancedcode\space shooter\game.h
 	<SDL.h>
 	<vector>
 
-1746887527 x:\advancedcode\space shooter\score.h
+1747021422 x:\advancedcode\space shooter\score.h
 	<SDL.h>
 	<SDL_ttf.h>
 	<string>
 	<iostream>
 	"game.h"
 
-1746888993 source:x:\advancedcode\space shooter\score.cpp
+1747021422 source:x:\advancedcode\space shooter\score.cpp
 	"score.h"
 	"game.h"
 	<fstream>
 	<sstream>
 
-1746861525 source:x:\advancedcode\space shooter\menu.cpp
+1747061162 source:x:\advancedcode\space shooter\menu.cpp
 	"menu.h"
 
-1746861525 x:\advancedcode\space shooter\menu.h
+1747055175 x:\advancedcode\space shooter\menu.h
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
 	"game.h"
+	"sound.h"
 
-1746861558 source:x:\advancedcode\space shooter\instruction.cpp
+1747061162 source:x:\advancedcode\space shooter\instruction.cpp
 	"instruction.h"
 
-1746861558 x:\advancedcode\space shooter\instruction.h
+1747054717 x:\advancedcode\space shooter\instruction.h
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
 	"game.h"
+	"sound.h"
 
-1746861525 source:x:\advancedcode\space shooter\explosion.cpp
+1747054717 source:x:\advancedcode\space shooter\explosion.cpp
 	"explosion.h"
 	<SDL_image.h>
 	<iostream>
 
-1746861525 x:\advancedcode\space shooter\explosion.h
+1747054717 x:\advancedcode\space shooter\explosion.h
 	"game.h"
+	"sound.h"
 
-1746861525 source:x:\advancedcode\space shooter\player.cpp
+1747021422 source:x:\advancedcode\space shooter\player.cpp
 	"player.h"
 	<SDL_image.h>
 	<iostream>
 
-1746861525 x:\advancedcode\space shooter\player.h
+1747021422 x:\advancedcode\space shooter\player.h
 	"game.h"
 
-1746861525 source:x:\advancedcode\space shooter\bullet.cpp
+1747055175 source:x:\advancedcode\space shooter\bullet.cpp
 	"bullet.h"
 	<SDL_image.h>
 	<iostream>
 	<algorithm>
 
-1746861525 x:\advancedcode\space shooter\bullet.h
+1747054717 x:\advancedcode\space shooter\bullet.h
 	"game.h"
 	<vector>
 	"score.h"
+	"sound.h"
 
-1746861525 source:x:\advancedcode\space shooter\enemy.cpp
+1747021422 source:x:\advancedcode\space shooter\enemy.cpp
 	"enemy.h"
 	"score.h"
 	<SDL_image.h>
@@ -83,12 +88,12 @@
 	<algorithm>
 	<cstdlib>
 
-1746861525 x:\advancedcode\space shooter\enemy.h
+1747021422 x:\advancedcode\space shooter\enemy.h
 	"game.h"
 	<vector>
 	"score.h"
 
-1746887527 x:\advancedcode\space shooter\gameover.h
+1747054717 x:\advancedcode\space shooter\gameover.h
 	<SDL.h>
 	<SDL_image.h>
 	<iostream>
@@ -97,11 +102,22 @@
 	"player.h"
 	"bullet.h"
 	"enemy.h"
+	"sound.h"
 
-1746888018 source:x:\advancedcode\space shooter\gameover.cpp
+1747061162 source:x:\advancedcode\space shooter\gameover.cpp
 	"gameover.h"
 	"score.h"
 	"player.h"
 	"bullet.h"
 	"enemy.h"
+
+1747061162 x:\advancedcode\space shooter\sound.h
+	<SDL.h>
+	<SDL_mixer.h>
+	<string>
+	"game.h"
+
+1747056908 source:x:\advancedcode\space shooter\sound.cpp
+	"sound.h"
+	<iostream>
 

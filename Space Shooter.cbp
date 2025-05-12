@@ -49,6 +49,8 @@
 		<Unit filename="player.h" />
 		<Unit filename="score.cpp" />
 		<Unit filename="score.h" />
+		<Unit filename="sound.cpp" />
+		<Unit filename="sound.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

@@ -1,6 +1,6 @@
 #include "instruction.h"
 
-InstructionManager::InstructionManager(SDL_Renderer* renderer) : backgroundTexture(nullptr), instructionTexture(nullptr), backButtonTexture(nullptr) {
+InstructionManager::InstructionManager(SDL_Renderer* renderer, SoundManager* sound) : backgroundTexture(nullptr), instructionTexture(nullptr), backButtonTexture(nullptr), soundManager(sound) {
     loadTextures(renderer);
 }
 
@@ -64,5 +64,6 @@ void InstructionManager::handleClick(int x, int y, GameState& state) {
     SDL_Rect backRect = {10, 10, 100, 100};
     if (x >= backRect.x && x <= backRect.x + backRect.w && y >= backRect.y && y <= backRect.y + backRect.h) {
         state = MENU;
+        soundManager->playMusicForState(MENU); // Phát nhạc Menu
     }
 }
