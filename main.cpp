@@ -13,11 +13,13 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
+    // Khởi tạo SDL và SDL_image
     if (SDL_Init(SDL_INIT_VIDEO) < 0 || !IMG_Init(IMG_INIT_PNG)) {
         std::cout << "Error: SDL/IMG_Init failed! " << SDL_GetError() << std::endl;
         return 1;
     }
 
+    // Tạo cửa sổ trò chơi
     SDL_Window* window = SDL_CreateWindow("Space Shooter",
                                         SDL_WINDOWPOS_CENTERED,
                                         SDL_WINDOWPOS_CENTERED,
@@ -29,6 +31,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Tạo renderer để vẽ lên cửa sổ
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
         std::cout << "Error: Could not create renderer! " << SDL_GetError() << std::endl;
@@ -37,7 +40,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Khởi tạo random seed
     srand(time(nullptr));
+
+    // Khởi tạo các thành phần trong trò chơi
     SoundManager soundManager;
     Player player(renderer);
     BulletManager bullets(renderer, &soundManager);
@@ -48,7 +54,8 @@ int main(int argc, char* argv[]) {
     InstructionManager instructionManager(renderer, &soundManager);
     GameOverManager gameOverManager(renderer, &soundManager);
 
-    SDL_Texture* liveTexture = nullptr;
+    // Tạo texture cho số mạng
+    SDL_Texture* liveTexture = nullptr; 
     SDL_Surface* liveSurface = IMG_Load("resources/Live.png");
     if (liveSurface) {
         liveTexture = SDL_CreateTextureFromSurface(renderer, liveSurface);
@@ -57,6 +64,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Warning: Could not load Live.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 
+    // Tạo texture cho nền khi chơi
     SDL_Texture* playBGTexture = nullptr;
     SDL_Surface* playBGSurface = IMG_Load("resources/Play_BG.png");
     if (playBGSurface) {
@@ -66,15 +74,18 @@ int main(int argc, char* argv[]) {
         std::cout << "Warning: Could not load Play_BG.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 
+    // Biến điều khiển trạng thái trò chơi
     Uint32 countdownStart = 0;
     int countdownStep = 0;
     Uint32 lastEnemySpawn = 0;
-
     GameState state = MENU;
+
+    // Bật nhạc nền cho menu
     soundManager.playMusicForState(MENU); // Phát nhạc Menu khi bắt đầu
     SDL_Event event;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
+    // Vòng lặp chính của trò chơi
     while (true) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -107,6 +118,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Xử lý trạng thái CONUTDOWN trước khi vào trạng thái PLAYING
         if (state == COUNTDOWN) {
             Uint32 currentTime = SDL_GetTicks();
             int elapsedSteps = (currentTime - countdownStart) / COUNTDOWN_DELAY;
@@ -118,6 +130,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Xử lý trạng thái PLAYING (đang chơi)
         if (state == PLAYING) {
             player.update(keyboardState);
             Uint32 currentTime = SDL_GetTicks();
@@ -137,8 +150,7 @@ int main(int argc, char* argv[]) {
                         if (enemyList[j].active && SDL_HasIntersection(&bulletList[i].rect, &enemyList[j].rect)) {
                             bulletList[i].active = false;
                             enemyList[j].active = false;
-                            scoreManager.addScore(1);
-                            std::cout << "Enemy hit by bullet, score increased to: " << scoreManager.getScore() << std::endl;
+                            scoreManager.addScore(1); // Tăng điểm khi bắn trúng kẻ thù
                         }
                     }
                 }
@@ -162,7 +174,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Render
+        // Render giao diện MENU, INSTRUCTIONS và các trạng thái khác
         if (state == MENU) {
             menuManager.render(renderer, state);
         } else if (state == INSTRUCTIONS) {
@@ -175,7 +187,8 @@ int main(int argc, char* argv[]) {
                 SDL_RenderClear(renderer);
                 std::cout << "Warning: Play_BG not loaded, using black background!" << std::endl;
             }
-
+            
+            // Render các trạng thái đếm ngược
             if (state == COUNTDOWN) {
                 const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
                 if (countdownStep < 5) {
@@ -201,8 +214,8 @@ int main(int argc, char* argv[]) {
                     }
                 }
             } else if (state == GAME_OVER) {
-                gameOverManager.render(renderer);
-            } else {
+                gameOverManager.render(renderer); // Render giao diện Game Over
+            } else { // Render các đối tượng trong trạng thái chơi
                 player.render(renderer);
                 bullets.render(renderer);
                 enemies.render(renderer);
@@ -215,12 +228,13 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Luôn render điểm số và số mạng trong mọi trạng thái
+        // Luôn render điểm số và số mạng trong trạng thái PLAYING
         scoreManager.render(renderer, 10, 10, state, liveTexture);
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
     }
 
+    // Giải phóng tài nguyên
     if (liveTexture) SDL_DestroyTexture(liveTexture);
     if (playBGTexture) SDL_DestroyTexture(playBGTexture);
     SDL_DestroyRenderer(renderer);

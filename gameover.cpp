@@ -4,16 +4,19 @@
 #include "bullet.h"
 #include "enemy.h"
 
+// Constructor khởi tạo GameOver
 GameOverManager::GameOverManager(SDL_Renderer* renderer, SoundManager* sound) : backgroundTexture(nullptr), homeButtonTexture(nullptr), resetButtonTexture(nullptr), soundManager(sound) {
     loadTextures(renderer);
 }
 
+// Destructor giải phóng GameOver
 GameOverManager::~GameOverManager() {
     if (backgroundTexture) SDL_DestroyTexture(backgroundTexture);
     if (homeButtonTexture) SDL_DestroyTexture(homeButtonTexture);
     if (resetButtonTexture) SDL_DestroyTexture(resetButtonTexture);
 }
 
+// Hàm load các texture từ file
 void GameOverManager::loadTextures(SDL_Renderer* renderer) {
     SDL_Surface* bgSurface = IMG_Load("resources/GameOver_BG.png");
     if (bgSurface) {
@@ -49,6 +52,7 @@ void GameOverManager::loadTextures(SDL_Renderer* renderer) {
     }
 }
 
+// Render giao diện Game Over
 void GameOverManager::render(SDL_Renderer* renderer) {
     if (backgroundTexture) {
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
@@ -77,6 +81,7 @@ void GameOverManager::render(SDL_Renderer* renderer) {
     }
 }
 
+// Hàm xử lý sự kiện click chuột
 void GameOverManager::handleClick(int x, int y, GameState& state, ScoreManager& scoreManager, Player& player, BulletManager& bulbs, EnemyManager& enemies, Uint32& countdownStart, int& countdownStep, Uint32& lastEnemySpawn) {
     SDL_Rect homeRect = {250, 400, 100, 100};
     SDL_Rect resetRect = {450, 400, 100, 100};

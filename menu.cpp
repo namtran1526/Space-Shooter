@@ -1,12 +1,14 @@
 #include "menu.h"
 
+// Constructor khởi tạo Menu
 MenuManager::MenuManager(SDL_Renderer* renderer, SoundManager* sound) : backgroundTexture(nullptr), playButtonTexture(nullptr), instructionButtonTexture(nullptr), musicButtonTexture(nullptr), pauseButtonTexture(nullptr), musicOn(true), soundManager(sound) {
-    musicButtonSrcRect = {0, 0, 100, 100};
-    pauseButtonSrcRect = {0, 0, 50, 50};
+    musicButtonSrcRect = {0, 0, 100, 100}; // nút âm thanh
+    pauseButtonSrcRect = {0, 0, 50, 50}; // nút tạm dừng
     loadTextures(renderer);
     soundManager->toggleMusic(musicOn, MENU); // Khởi tạo trạng thái nhạc
 }
 
+// Destructor giải phóng Menu
 MenuManager::~MenuManager() {
     if (backgroundTexture) SDL_DestroyTexture(backgroundTexture);
     if (playButtonTexture) SDL_DestroyTexture(playButtonTexture);
@@ -15,6 +17,7 @@ MenuManager::~MenuManager() {
     if (pauseButtonTexture) SDL_DestroyTexture(pauseButtonTexture);
 }
 
+// Hàm load các texture từ file
 void MenuManager::loadTextures(SDL_Renderer* renderer) {
     SDL_Surface* backgroundSurface = IMG_Load("resources/Menu_BG.png");
     if (backgroundSurface) {
@@ -57,6 +60,7 @@ void MenuManager::loadTextures(SDL_Renderer* renderer) {
     }
 }
 
+// Render các nút và nền menu
 void MenuManager::render(SDL_Renderer* renderer, GameState state) {
     if (state == MENU) {
         if (backgroundTexture) {
@@ -85,16 +89,15 @@ void MenuManager::render(SDL_Renderer* renderer, GameState state) {
         if (pauseButtonTexture) {
             SDL_Rect pauseRect = {WINDOW_WIDTH - 60, 10, 50, 50};
             SDL_RenderCopy(renderer, pauseButtonTexture, &pauseButtonSrcRect, &pauseRect);
-            std::cout << "Pause button rendered at (" << pauseRect.x << "," << pauseRect.y << ") for state: " << (state == PLAYING ? "PLAYING" : "PAUSED") << std::endl;
         } else {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
             SDL_Rect pauseRect = {WINDOW_WIDTH - 60, 10, 50, 50};
             SDL_RenderFillRect(renderer, &pauseRect);
-            std::cout << "Pause button texture not loaded, using white rectangle at (" << pauseRect.x << "," << pauseRect.y << ")" << std::endl;
         }
     }
 }
 
+// Hàm xử lý sự kiện click chuột
 void MenuManager::handleClick(int x, int y, GameState& state) {
     if (state == MENU) {
         SDL_Rect playRect = {350, 450, 100, 100};
@@ -113,12 +116,11 @@ void MenuManager::handleClick(int x, int y, GameState& state) {
             soundManager->toggleMusic(musicOn, MENU); // Truyền trạng thái MENU
             std::cout << (musicOn ? "Music On" : "Music Off") << std::endl;
         }
-    } else if (state == PLAYING || state == PAUSED) {
+    } else if (state == PLAYING || state == PAUSED) { // Tạm dừng hoặc chơi
         SDL_Rect pauseRect = {WINDOW_WIDTH - 60, 10, 50, 50};
         if (x >= pauseRect.x && x <= pauseRect.x + pauseRect.w && y >= pauseRect.y && y <= pauseRect.y + pauseRect.h) {
             pauseButtonSrcRect.x = (state == PLAYING) ? 50 : 0;
             state = (state == PLAYING) ? PAUSED : PLAYING;
-            std::cout << (state == PAUSED ? "Game Paused" : "Game Resumed") << " at click (" << x << "," << y << ")" << std::endl;
         }
     }
 }

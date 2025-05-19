@@ -11,7 +11,6 @@ ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
     font = TTF_OpenFont("resources/VNI-Lithos.TTF", 24); // Sử dụng VNI-Lithos.TTF
     if (!font) {
         std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF'! SDL_ttf Error: " << TTF_GetError() << std::endl;
-        std::cout << "Please ensure the font file exists in the resources folder and the path is correct." << std::endl;
         TTF_Quit();
         return;
     }
@@ -19,12 +18,14 @@ ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
     loadHighScore();
 }
 
+// Destructor giải phóng ScoreManager
 ScoreManager::~ScoreManager() {
     saveHighScore();
     if (font) TTF_CloseFont(font);
     TTF_Quit();
 }
 
+// Hàm tải điểm cao từ file
 void ScoreManager::loadHighScore() {
     std::ifstream file(highScoreFile);
     if (file.is_open()) {
@@ -33,6 +34,7 @@ void ScoreManager::loadHighScore() {
     }
 }
 
+// Hàm lưu điểm cao vào file
 void ScoreManager::saveHighScore() {
     if (score > highScore) {
         highScore = score;
@@ -44,31 +46,38 @@ void ScoreManager::saveHighScore() {
     }
 }
 
+// Hàm thêm điểm
 void ScoreManager::addScore(int points) {
     score += points;
 }
 
+// Hàm trả về điểm số hiện tại
 int ScoreManager::getScore() const {
     return score;
 }
 
+// Hàm trả về điểm cao nhất
 int ScoreManager::getHighScore() const {
     return highScore;
 }
 
+// Hàm trả về số mạng còn lại
 int ScoreManager::getLives() const {
     return lives;
 }
 
+// Hàm giảm số mạng
 void ScoreManager::loseLife() {
     if (lives > 0) lives--;
 }
 
+// Hàm đặt lại điểm số và số mạng
 void ScoreManager::reset() {
     score = 0;
     lives = 3;
 }
 
+// Hàm render điểm và số 
 void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state, SDL_Texture* liveTexture) {
     if (!font) {
         std::cout << "Error: Font not loaded, cannot render text!" << std::endl;
@@ -91,7 +100,6 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect highScoreRect = {x, y + 30, highScoreSurface->w, highScoreSurface->h};
                 SDL_RenderCopy(renderer, scoreTexture, nullptr, &scoreRect);
                 SDL_RenderCopy(renderer, highScoreTexture, nullptr, &highScoreRect);
-                std::cout << "Rendered Score: " << scoreText << " and High Score: " << highScoreText << " at state: " << static_cast<int>(state) << std::endl;
             }
             if (scoreTexture) SDL_DestroyTexture(scoreTexture);
             if (highScoreTexture) SDL_DestroyTexture(highScoreTexture);
@@ -99,7 +107,7 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
         if (scoreSurface) SDL_FreeSurface(scoreSurface);
         if (highScoreSurface) SDL_FreeSurface(highScoreSurface);
 
-        // Hiển thị số mạng (lives) với kích thước lớn hơn và dịch xuống dưới
+        // Hiển thị số mạng (lives)
         if (liveTexture) {
             const int heartSize = 30; // Kích thước 30x30
             const int heartSpacing = 5;
@@ -107,7 +115,6 @@ void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state,
                 SDL_Rect liveRect = {x + i * (heartSize + heartSpacing), y + 70, heartSize, heartSize};
                 SDL_RenderCopy(renderer, liveTexture, nullptr, &liveRect);
             }
-            std::cout << "Rendered Lives: " << lives << " at state: " << static_cast<int>(state) << std::endl;
         }
     }
 }

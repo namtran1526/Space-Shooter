@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdlib>
 
+// Constructor khởi tạo Enemy
 EnemyManager::EnemyManager(SDL_Renderer* renderer) : texture(nullptr), lastSpawnTime(0) {
     SDL_Surface* enemySurface = IMG_Load("resources/Enemy.png");
     if (enemySurface) {
@@ -15,35 +16,36 @@ EnemyManager::EnemyManager(SDL_Renderer* renderer) : texture(nullptr), lastSpawn
     }
 }
 
+// Destructor giải phóng Enemy
 EnemyManager::~EnemyManager() {
     if (texture) SDL_DestroyTexture(texture);
 }
 
+// Cập nhật vị trí Enemy, kiểm tra va chạm và di chuyển xuống dưới
 void EnemyManager::update(ScoreManager& scoreManager, const GameObject& player) {
     for (auto& enemy : enemies) {
         if (enemy.active) {
             enemy.rect.y += ENEMY_SPEED;
             if (enemy.rect.y > WINDOW_HEIGHT) {
                 enemy.active = false;
-                std::cout << "Enemy removed: Out of screen at y=" << enemy.rect.y << std::endl;
-            } else if (player.active && SDL_HasIntersection(&player.rect, &enemy.rect)) {
+            } else if (player.active && SDL_HasIntersection(&player.rect, &enemy.rect)) { // Nếu va chạm với player sẽ giảm mạng của Player
                 scoreManager.loseLife();
                 enemy.active = false;
-                std::cout << "Collision: Player hit by enemy, lives left: " << scoreManager.getLives() << std::endl;
             }
         }
     }
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const GameObject& obj) { return !obj.active; }), enemies.end());
 }
 
-void EnemyManager::spawn(Uint32 currentTime) {
+// Sinh ra Enemy mới dựa trên thời gian hiện tại
+void EnemyManager::spawn(Uint32 currentTime) { 
     if (currentTime - lastSpawnTime > SPAWN_INTERVAL) {
-        enemies.push_back({{rand() % (WINDOW_WIDTH - ENEMY_WIDTH), 0, ENEMY_WIDTH, ENEMY_HEIGHT}, true, texture});
+        enemies.push_back({{rand() % (WINDOW_WIDTH - ENEMY_WIDTH), 0, ENEMY_WIDTH, ENEMY_HEIGHT}, true, texture}); // Sinh ra enemy mới với vị trí ngẫu nhiên
         lastSpawnTime = currentTime;
-        std::cout << "Enemy spawned at x=" << enemies.back().rect.x << std::endl;
     }
 }
 
+// Render tất cả các Enemy đang hoạt động
 void EnemyManager::render(SDL_Renderer* renderer) {
     for (const auto& enemy : enemies) {
         if (enemy.active) {
