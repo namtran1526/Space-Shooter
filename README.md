@@ -28,7 +28,7 @@ Space Shooter là trò chơi bắn thiên thạch trong không gian. Người ch
 - **Event chuột**
 - **Event phím**
 - **Tạo bản sao**
-- **Mô tả mức độ sử dụng AI: 20% AI khi xử lý các phần trên (Copilot)
+- **Mô tả mức độ sử dụng AI: 20% AI khi xử lý các phần trên (Copilot)**
 ### Các kiến thức học được
 - **Làm game C++ đơn giản sử dụng SDL2**
 - **Cách tổ chức các file trong dự án**
