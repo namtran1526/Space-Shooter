@@ -38,11 +38,11 @@ Space Shooter là trò chơi bắn thiên thạch trong không gian. Người ch
 
 ## Nguồn tài nguyên game và tham khảo
 **Code:**
-*https://lazyfoo.net/tutorials/SDL/index.php*
+- *https://lazyfoo.net/tutorials/SDL/index.php*
 **Thiết kế và hình ảnh:**
-*https://www.canva.com/design/DAGmmZX_C7U/Q9CYbqMaYR5PnmN2vVyT1Q/edit*
-*https://pngtree.com/*
+- *https://www.canva.com/design/DAGmmZX_C7U/Q9CYbqMaYR5PnmN2vVyT1Q/edit*
+- *https://pngtree.com/*
 **Âm thanh:**
-*https://pixabay.com/vi/sound-effects/search/game/*
+- *https://pixabay.com/vi/sound-effects/search/game/*
 
 
