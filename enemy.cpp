@@ -11,8 +11,6 @@ EnemyManager::EnemyManager(SDL_Renderer* renderer) : texture(nullptr), lastSpawn
     if (enemySurface) {
         texture = SDL_CreateTextureFromSurface(renderer, enemySurface);
         SDL_FreeSurface(enemySurface);
-    } else {
-        std::cout << "Warning: Could not load Enemy.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 }
 
@@ -38,7 +36,7 @@ void EnemyManager::update(ScoreManager& scoreManager, const GameObject& player) 
 }
 
 // Sinh ra Enemy mới dựa trên thời gian hiện tại
-void EnemyManager::spawn(Uint32 currentTime) { 
+void EnemyManager::spawn(Uint32 currentTime) {
     if (currentTime - lastSpawnTime > SPAWN_INTERVAL) {
         enemies.push_back({{rand() % (WINDOW_WIDTH - ENEMY_WIDTH), 0, ENEMY_WIDTH, ENEMY_HEIGHT}, true, texture}); // Sinh ra enemy mới với vị trí ngẫu nhiên
         lastSpawnTime = currentTime;

@@ -42,7 +42,7 @@ enum GameState {
 struct GameObject {
     SDL_Rect rect; // hình chữ nhật xác định vị trí và kích thước
     bool active; // Kiểm tra đối tượng hoạt động không
-    SDL_Texture* texture; // Texture của đối tượng để hiển thị lên màn hình
+    SDL_Texture* texture;
 };
 
 struct Explosion {

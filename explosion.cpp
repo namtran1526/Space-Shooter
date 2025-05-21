@@ -8,8 +8,6 @@ ExplosionManager::ExplosionManager(SDL_Renderer* renderer, SoundManager* sound) 
     if (explosionSurface) {
         texture = SDL_CreateTextureFromSurface(renderer, explosionSurface);
         SDL_FreeSurface(explosionSurface);
-    } else {
-        std::cout << "Warning: Could not load Boom.png! " << IMG_GetError() << std::endl;
     }
     std::vector<SDL_Rect> frames;
     if (texture) {

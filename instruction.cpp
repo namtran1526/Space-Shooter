@@ -18,24 +18,16 @@ void InstructionManager::loadTextures(SDL_Renderer* renderer) {
     if (bgSurface) {
         backgroundTexture = SDL_CreateTextureFromSurface(renderer, bgSurface);
         SDL_FreeSurface(bgSurface);
-    } else {
-        std::cout << "Warning: Could not load Play_BG.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* instructionSurface = IMG_Load("resources/Instruction.png");
     if (instructionSurface) {
         instructionTexture = SDL_CreateTextureFromSurface(renderer, instructionSurface);
         SDL_FreeSurface(instructionSurface);
-    } else {
-        std::cout << "Warning: Could not load Instruction.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* backSurface = IMG_Load("resources/Back_Button.png");
     if (backSurface) {
         backButtonTexture = SDL_CreateTextureFromSurface(renderer, backSurface);
         SDL_FreeSurface(backSurface);
-    } else {
-        std::cout << "Warning: Could not load Back_Button.png! " << IMG_GetError() << std::endl;
     }
 }
 
@@ -43,10 +35,6 @@ void InstructionManager::loadTextures(SDL_Renderer* renderer) {
 void InstructionManager::render(SDL_Renderer* renderer) {
     if (backgroundTexture) {
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
-    } else {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        std::cout << "Warning: Instruction background not loaded, using black background!" << std::endl;
     }
 
     if (instructionTexture) {
@@ -57,10 +45,6 @@ void InstructionManager::render(SDL_Renderer* renderer) {
     if (backButtonTexture) {
         SDL_Rect backRect = {10, 10, 100, 100};
         SDL_RenderCopy(renderer, backButtonTexture, nullptr, &backRect);
-    } else {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_Rect backRect = {10, 10, 100, 100};
-        SDL_RenderFillRect(renderer, &backRect);
     }
 }
 

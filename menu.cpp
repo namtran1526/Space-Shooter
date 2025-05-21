@@ -23,40 +23,26 @@ void MenuManager::loadTextures(SDL_Renderer* renderer) {
     if (backgroundSurface) {
         backgroundTexture = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
         SDL_FreeSurface(backgroundSurface);
-    } else {
-        std::cout << "Error: Could not load Menu_BG.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* playSurface = IMG_Load("resources/Play_button.png");
     if (playSurface) {
         playButtonTexture = SDL_CreateTextureFromSurface(renderer, playSurface);
         SDL_FreeSurface(playSurface);
-    } else {
-        std::cout << "Warning: Could not load Play_button.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* instructionSurface = IMG_Load("resources/Instruction_button.png");
     if (instructionSurface) {
         instructionButtonTexture = SDL_CreateTextureFromSurface(renderer, instructionSurface);
         SDL_FreeSurface(instructionSurface);
-    } else {
-        std::cout << "Warning: Could not load Instruction_button.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* musicSurface = IMG_Load("resources/Music_button.png");
     if (musicSurface) {
         musicButtonTexture = SDL_CreateTextureFromSurface(renderer, musicSurface);
         SDL_FreeSurface(musicSurface);
-    } else {
-        std::cout << "Warning: Could not load Music_button.png! " << IMG_GetError() << std::endl;
     }
-
     SDL_Surface* pauseSurface = IMG_Load("resources/Pause_Button.png");
     if (pauseSurface) {
         pauseButtonTexture = SDL_CreateTextureFromSurface(renderer, pauseSurface);
         SDL_FreeSurface(pauseSurface);
-    } else {
-        std::cout << "Warning: Could not load Pause_Button.png! " << IMG_GetError() << std::endl;
     }
 }
 
@@ -65,12 +51,7 @@ void MenuManager::render(SDL_Renderer* renderer, GameState state) {
     if (state == MENU) {
         if (backgroundTexture) {
             SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
-        } else {
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderClear(renderer);
-            std::cout << "Warning: Menu background not loaded, using black background!" << std::endl;
         }
-
         if (playButtonTexture) {
             SDL_Rect playRect = {350, 450, 100, 100};
             SDL_RenderCopy(renderer, playButtonTexture, nullptr, &playRect);

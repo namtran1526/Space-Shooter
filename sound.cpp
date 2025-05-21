@@ -8,31 +8,11 @@ SoundManager::SoundManager() : menuMusic(nullptr), countdownMusic(nullptr), game
         std::cout << "Error: Could not initialize SDL_mixer! " << Mix_GetError() << std::endl;
         return;
     }
-
     menuMusic = Mix_LoadMUS("music/Menu.mp3");
-    if (!menuMusic) {
-        std::cout << "Warning: Could not load music/Menu.mp3! " << Mix_GetError() << std::endl;
-    }
-
     countdownMusic = Mix_LoadMUS("music/Countdown.mp3");
-    if (!countdownMusic) {
-        std::cout << "Warning: Could not load music/Countdown.mp3! " << Mix_GetError() << std::endl;
-    }
-
     gameOverMusic = Mix_LoadMUS("music/GameOver.mp3");
-    if (!gameOverMusic) {
-        std::cout << "Warning: Could not load music/GameOver.mp3! " << Mix_GetError() << std::endl;
-    }
-
     boomSound = Mix_LoadMUS("music/Boom.mp3");
-    if (!boomSound) {
-        std::cout << "Warning: Could not load music/Boom.mp3! " << Mix_GetError() << std::endl;
-    }
-
     shootSound = Mix_LoadWAV("music/Shoot.wav");
-    if (!shootSound) {
-        std::cout << "Warning: Could not load music/Shoot.wav! " << Mix_GetError() << std::endl;
-    }
 }
 
 // Destructor giải phóng SoundManager

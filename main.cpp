@@ -13,12 +13,6 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-    // Khởi tạo SDL và SDL_image
-    if (SDL_Init(SDL_INIT_VIDEO) < 0 || !IMG_Init(IMG_INIT_PNG)) {
-        std::cout << "Error: SDL/IMG_Init failed! " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
     // Tạo cửa sổ trò chơi
     SDL_Window* window = SDL_CreateWindow("Space Shooter",
                                         SDL_WINDOWPOS_CENTERED,
@@ -33,12 +27,6 @@ int main(int argc, char* argv[]) {
 
     // Tạo renderer để vẽ lên cửa sổ
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cout << "Error: Could not create renderer! " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
 
     // Khởi tạo random seed
     srand(time(nullptr));
@@ -55,13 +43,11 @@ int main(int argc, char* argv[]) {
     GameOverManager gameOverManager(renderer, &soundManager);
 
     // Tạo texture cho số mạng
-    SDL_Texture* liveTexture = nullptr; 
+    SDL_Texture* liveTexture = nullptr;
     SDL_Surface* liveSurface = IMG_Load("resources/Live.png");
     if (liveSurface) {
         liveTexture = SDL_CreateTextureFromSurface(renderer, liveSurface);
         SDL_FreeSurface(liveSurface);
-    } else {
-        std::cout << "Warning: Could not load Live.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 
     // Tạo texture cho nền khi chơi
@@ -70,8 +56,6 @@ int main(int argc, char* argv[]) {
     if (playBGSurface) {
         playBGTexture = SDL_CreateTextureFromSurface(renderer, playBGSurface);
         SDL_FreeSurface(playBGSurface);
-    } else {
-        std::cout << "Warning: Could not load Play_BG.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 
     // Biến điều khiển trạng thái trò chơi
@@ -182,23 +166,13 @@ int main(int argc, char* argv[]) {
         } else if (state == COUNTDOWN || state == PLAYING || state == PAUSED || state == EXPLODING || state == GAME_OVER) {
             if (playBGTexture) {
                 SDL_RenderCopy(renderer, playBGTexture, nullptr, nullptr);
-            } else {
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-                SDL_RenderClear(renderer);
-                std::cout << "Warning: Play_BG not loaded, using black background!" << std::endl;
             }
-            
+
             // Render các trạng thái đếm ngược
             if (state == COUNTDOWN) {
                 const char* countdownTexts[] = {"Are you ready?", "3", "2", "1", "Start"};
                 if (countdownStep < 5) {
                     TTF_Font* countdownFont = TTF_OpenFont("resources/VNI-Lithos.TTF", 48);
-                    if (!countdownFont) {
-                        std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF' for countdown! SDL_ttf Error: " << TTF_GetError() << std::endl;
-                        std::cout << "Falling back to default font from ScoreManager." << std::endl;
-                        countdownFont = scoreManager.getFont();
-                        if (countdownFont) TTF_SetFontSize(countdownFont, 48);
-                    }
                     if (countdownFont) {
                         SDL_Surface* countdownSurface = TTF_RenderText_Solid(countdownFont, countdownTexts[countdownStep], scoreManager.getTextColor());
                         if (countdownSurface) {

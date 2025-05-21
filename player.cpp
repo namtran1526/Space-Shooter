@@ -8,8 +8,6 @@ Player::Player(SDL_Renderer* renderer) : texture(nullptr) {
     if (playerSurface) {
         texture = SDL_CreateTextureFromSurface(renderer, playerSurface);
         SDL_FreeSurface(playerSurface);
-    } else {
-        std::cout << "Warning: Could not load Player.png! Using fallback. " << IMG_GetError() << std::endl;
     }
     playerObj = {{WINDOW_WIDTH / 2 - PLAYER_WIDTH / 2, WINDOW_HEIGHT - PLAYER_HEIGHT - 10, PLAYER_WIDTH, PLAYER_HEIGHT}, true, texture};
 }

@@ -9,11 +9,6 @@ ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
         return;
     }
     font = TTF_OpenFont("resources/VNI-Lithos.TTF", 24); // Sử dụng VNI-Lithos.TTF
-    if (!font) {
-        std::cout << "Error: Could not load font at 'resources/VNI-Lithos.TTF'! SDL_ttf Error: " << TTF_GetError() << std::endl;
-        TTF_Quit();
-        return;
-    }
     textColor = {255, 255, 255, 255};
     loadHighScore();
 }
@@ -77,7 +72,7 @@ void ScoreManager::reset() {
     lives = 3;
 }
 
-// Hàm render điểm và số 
+// Hàm render điểm và số
 void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state, SDL_Texture* liveTexture) {
     if (!font) {
         std::cout << "Error: Font not loaded, cannot render text!" << std::endl;

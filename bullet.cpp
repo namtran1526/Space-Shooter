@@ -9,8 +9,6 @@ BulletManager::BulletManager(SDL_Renderer* renderer, SoundManager* sound) : text
     if (bulletSurface) {
         texture = SDL_CreateTextureFromSurface(renderer, bulletSurface);
         SDL_FreeSurface(bulletSurface);
-    } else {
-        std::cout << "Warning: Could not load Bullet.png! Using fallback. " << IMG_GetError() << std::endl;
     }
 }
 
@@ -41,7 +39,7 @@ void BulletManager::shoot(int x, int y, Uint32 currentTime, Uint32 cooldown) {
     }
 }
 
-// Render tất cả các viên đạn đang hoạt động 
+// Render tất cả các viên đạn đang hoạt động
 void BulletManager::render(SDL_Renderer* renderer) {
     for (const auto& bullet : bullets) {
         if (bullet.active) {
