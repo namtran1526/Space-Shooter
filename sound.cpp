@@ -4,6 +4,10 @@
 // Constructor khởi tạo SoundManager
 SoundManager::SoundManager() : menuMusic(nullptr), countdownMusic(nullptr), gameOverMusic(nullptr), boomSound(nullptr),
                               shootSound(nullptr), musicOn(true) {
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cout << "Error: Could not initialize SDL_mixer! " << Mix_GetError() << std::endl;
+        return;
+    }
     menuMusic = Mix_LoadMUS("music/Menu.mp3");
     countdownMusic = Mix_LoadMUS("music/Countdown.mp3");
     gameOverMusic = Mix_LoadMUS("music/GameOver.mp3");
