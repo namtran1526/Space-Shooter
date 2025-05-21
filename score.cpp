@@ -4,10 +4,6 @@
 #include <sstream>
 
 ScoreManager::ScoreManager() : score(0), highScore(0), lives(3), font(nullptr) {
-    if (TTF_Init() < 0) {
-        std::cout << "Error: TTF_Init failed! " << TTF_GetError() << std::endl;
-        return;
-    }
     font = TTF_OpenFont("resources/VNI-Lithos.TTF", 24); // Sử dụng VNI-Lithos.TTF
     textColor = {255, 255, 255, 255};
     loadHighScore();
@@ -74,11 +70,6 @@ void ScoreManager::reset() {
 
 // Hàm render điểm và số
 void ScoreManager::render(SDL_Renderer* renderer, int x, int y, GameState state, SDL_Texture* liveTexture) {
-    if (!font) {
-        std::cout << "Error: Font not loaded, cannot render text!" << std::endl;
-        return;
-    }
-
     // Chỉ render điểm số và số mạng khi không ở trạng thái MENU, GAME_OVER, hoặc INSTRUCTIONS
     if (state != MENU && state != GAME_OVER && state != INSTRUCTIONS) {
         // Hiển thị điểm số và điểm cao nhất

@@ -19,12 +19,6 @@ int main(int argc, char* argv[]) {
                                         SDL_WINDOWPOS_CENTERED,
                                         WINDOW_WIDTH, WINDOW_HEIGHT,
                                         0);
-    if (!window) {
-        std::cout << "Error: Could not create window! " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
     // Tạo renderer để vẽ lên cửa sổ
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
