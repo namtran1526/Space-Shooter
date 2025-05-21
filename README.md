@@ -23,10 +23,10 @@ Space Shooter là trò chơi bắn thiên thạch trong không gian. Người ch
 - **Text**
 - **Sound** 
 - **Logic game**
-#### Các phần tham khảo, có sự hỗ trợ AI
-- **Score**
 - **Event chuột**
 - **Event phím**
+#### Các phần tham khảo, có sự hỗ trợ AI
+- **Score**
 - **Tạo bản sao**
 - **Mô tả mức độ sử dụng : 10% AI và tham khảo khi xử lý các phần trên**
 ### Các kiến thức học được
