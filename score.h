@@ -10,28 +10,27 @@
 // Lớp ScoreManager quản lý điểm số, điểm cao và số mạng của người chơi
 class ScoreManager {
 private:
-    int score; // Điểm số hiện tại
-    int highScore; // Điểm cao nhất
-    int lives; // Số mạng còn lại
-    TTF_Font* font; // Phông chữ để hiển thị điểm số
-    SDL_Color textColor; // Màu sắc của văn bản
-    const std::string highScoreFile = "highscore.txt"; // file lưu điểm cao
-    void loadHighScore(); // Tải điểm cao từ file
-    void saveHighScore(); // Lưu điểm cao vào file
+    int score;
+    int highScore;
+    int lives;
+    TTF_Font* font;
+    SDL_Color textColor;
+    const std::string highScoreFile = "highscore.txt";
+    void loadHighScore();
+    void saveHighScore();
 
 public:
-    ScoreManager(); // Constructor khởi tạo ScoreManager
-    ~ScoreManager(); // Destructor giải phóng ScoreManager
-    void addScore(int points);  // Hàm thêm điểm
+    ScoreManager();
+    ~ScoreManager();
+    void addScore(int points);
     int getScore() const; // Trả về điểm số hiện tại
     int getHighScore() const; // Trả về điểm cao nhất
     int getLives() const; // Trả về số mạng còn lại
     void loseLife(); // Giảm số mạng
     void reset(); // Đặt lại điểm số và số mạng
-    void render(SDL_Renderer* renderer, int x, int y, GameState state, SDL_Texture* liveTexture); // Render điểm và số mạng lên
-    
-    // Trả về font chữ và màu sắc văn bản
-    TTF_Font* getFont() const { return font; } 
+    void render(SDL_Renderer* renderer, int x, int y, GameState state, SDL_Texture* liveTexture);
+
+    TTF_Font* getFont() const { return font; }
     SDL_Color getTextColor() const { return textColor; }
 };
 

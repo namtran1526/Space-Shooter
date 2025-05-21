@@ -10,22 +10,21 @@
 // Lớp MenuManager quản lý giao diện menu chính của trò chơi
 class MenuManager {
 private:
-    SDL_Texture* backgroundTexture;  // Texture nền menu
-    SDL_Texture* playButtonTexture; // Texture nút Play
-    SDL_Texture* instructionButtonTexture; // Texture nút Hướng dẫn
-    SDL_Texture* musicButtonTexture;  // Texture nút Âm thanh
-    SDL_Texture* pauseButtonTexture; // Texture nút Tạm dừng
-    bool musicOn; // Biến kiểm tra âm thanh có bật không
-    SDL_Rect musicButtonSrcRect; // Kích thước nguồn của nút âm thanh
-    SDL_Rect pauseButtonSrcRect; // Kích thước nguồn của nút tạm dừng
+    SDL_Texture* backgroundTexture;
+    SDL_Texture* playButtonTexture;
+    SDL_Texture* instructionButtonTexture;
+    SDL_Texture* musicButtonTexture;
+    SDL_Texture* pauseButtonTexture;
+    bool musicOn;
+    SDL_Rect musicButtonSrcRect;
+    SDL_Rect pauseButtonSrcRect;
     SoundManager* soundManager;
-    void loadTextures(SDL_Renderer* renderer); // Load các hình ảnh cần thiết
-
+    void loadTextures(SDL_Renderer* renderer);
 public:
-    MenuManager(SDL_Renderer* renderer, SoundManager* sound);  // Constructor khởi tạo MenuManager
-    ~MenuManager(); // Destructor giải phóng MenuManager
-    void render(SDL_Renderer* renderer, GameState state); // Render giao diện menu
-    void handleClick(int x, int y, GameState& state); // Hàm xử lý sự kiện click chuột
+    MenuManager(SDL_Renderer* renderer, SoundManager* sound);
+    ~MenuManager();
+    void render(SDL_Renderer* renderer, GameState state);
+    void handleClick(int x, int y, GameState& state);
     bool isMusicOn() const { return musicOn; } // Kiểm tra xem nhạc có đang bật không
 };
 

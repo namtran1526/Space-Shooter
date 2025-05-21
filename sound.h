@@ -14,20 +14,20 @@ private:
     Mix_Music* gameOverMusic; // Nhạc nền game over
     Mix_Music* boomSound; // Âm thanh nổ
     Mix_Chunk* shootSound; // Âm thanh bắn
-    bool musicOn; // Biến kiểm tra âm thanh có bật không
+    bool musicOn;
 
 public:
-    SoundManager(); // Constructor khởi tạo SoundManager
-    ~SoundManager(); // Destructor giải phóng SoundManager
-    void playMenuMusic(); // Phát nhạc nền menu
-    void playCountdownMusic(); // Phát nhạc nền đếm ngược
-    void playGameOverMusic(); // Phát nhạc nền game over
-    void playBoomSound(); // Phát âm thanh nổ
-    void playShootSound(); // Phát âm thanh bắn
-    void stopMusic(); // Dừng nhạc
+    SoundManager();
+    ~SoundManager();
+    void playMenuMusic();
+    void playCountdownMusic();
+    void playGameOverMusic();
+    void playBoomSound();
+    void playShootSound();
+    void stopMusic();
     void toggleMusic(bool enable, GameState state); // Bật/tắt nhạc
     void playMusicForState(GameState state); // Phát nhạc tương ứng với trạng thái trò chơi
-    bool isMusicOn() const { return musicOn; } // Kiểm tra xem nhạc có đang bật không
+    bool isMusicOn() const { return musicOn; }
 };
 
 #endif
